@@ -5,6 +5,12 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  --surface: #1c1c1c;
+  --panel: #25211d;
+  --text-muted: #c8bdad;
+  --amber: #d7a64f;
+  --steel: #7f9aa3;
+  --danger: #d76657;
 }
 
 * {
@@ -15,16 +21,295 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(215, 166, 79, 0.16), transparent 28rem),
+    linear-gradient(135deg, #0d0d0d, #1c1915);
+}
+
+button {
+  font: inherit;
 }
 
 .app-shell {
+  width: min(980px, calc(100% - 32px));
   min-height: 100vh;
+  margin: 0 auto;
+  padding: 48px 0;
   display: grid;
-  place-items: center;
-  padding: 24px;
-  background: #111;
+  align-content: center;
 }
 
-.placeholder {
+.coal-game {
+  display: grid;
+  gap: 24px;
+}
+
+.game-header {
+  display: grid;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--amber);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.game-header h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5.4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.game-header p:last-child {
+  max-width: 680px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 390px);
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid rgba(215, 166, 79, 0.34);
+  background:
+    linear-gradient(135deg, rgba(215, 166, 79, 0.12), transparent 36%),
+    rgba(20, 20, 20, 0.78);
+}
+
+.coal-scene {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(120deg, rgba(127, 154, 163, 0.18), transparent),
+    #0f0f0f;
+  border: 1px solid rgba(246, 240, 232, 0.12);
+}
+
+.coal-shadow {
+  position: absolute;
+  width: 220px;
+  height: 34px;
+  bottom: 58px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  filter: blur(10px);
+}
+
+.coal-piece {
+  position: relative;
+  width: 220px;
+  height: 250px;
+  clip-path: polygon(20% 8%, 73% 0, 92% 28%, 84% 78%, 49% 100%, 12% 74%, 0 32%);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 22%),
+    linear-gradient(230deg, #050505 0%, #222 42%, #090909 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset -28px -32px 44px rgba(0, 0, 0, 0.65);
+  transition: clip-path 220ms ease, border-radius 220ms ease, transform 220ms ease;
+}
+
+.workbench--readyToPolish .coal-piece,
+.workbench--complete .coal-piece {
+  clip-path: polygon(44% 0, 68% 12%, 76% 38%, 90% 62%, 70% 100%, 30% 100%, 10% 62%, 24% 38%, 32% 12%);
+  border-radius: 42% 42% 18% 18%;
+}
+
+.coal-chip {
+  position: absolute;
+  width: 34px;
+  height: 28px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.coal-chip--one {
+  top: 48px;
+  left: 28px;
+  transform: rotate(18deg);
+}
+
+.coal-chip--two {
+  right: 24px;
+  top: 92px;
+  transform: rotate(-20deg);
+}
+
+.coal-chip--three {
+  left: 76px;
+  bottom: 34px;
+  transform: rotate(8deg);
+}
+
+.workbench--readyToPolish .coal-chip,
+.workbench--complete .coal-chip {
+  display: none;
+}
+
+.shine-sweep {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.44), transparent 48%);
+}
+
+.workbench--complete .shine-sweep {
+  animation: shine-sweep 1.8s ease-in-out infinite;
+}
+
+.control-panel {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 24px;
+  background: rgba(246, 240, 232, 0.06);
+  border: 1px solid rgba(246, 240, 232, 0.12);
+}
+
+.tab-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tab-button {
+  min-height: 44px;
+  border: 1px solid rgba(246, 240, 232, 0.16);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.tab-button[aria-selected="true"] {
+  color: #111;
+  background: var(--amber);
+  border-color: var(--amber);
+  font-weight: 800;
+}
+
+.tab-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tab-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+.meter {
+  display: grid;
+  gap: 8px;
+}
+
+.meter span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.meter strong {
+  color: #fff;
+}
+
+.meter progress {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border: 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.meter progress::-webkit-progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.meter progress::-webkit-progress-value {
+  background: var(--steel);
+}
+
+.meter--warning progress::-webkit-progress-value {
+  background: var(--danger);
+}
+
+.meter--shine progress::-webkit-progress-value {
+  background: var(--amber);
+}
+
+.game-action,
+.reset-action {
+  min-height: 48px;
+  border: 0;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.game-action {
+  color: #121212;
+  background: var(--amber);
+}
+
+.game-action:hover {
+  background: #e8bd68;
+}
+
+.game-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.reset-action {
   color: #f6f0e8;
+  background: transparent;
+  border: 1px solid rgba(246, 240, 232, 0.18);
+}
+
+.game-log {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(100% - 24px, 980px);
+    padding: 24px 0;
+  }
+
+  .workbench {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .coal-scene {
+    min-height: 300px;
+  }
 }
