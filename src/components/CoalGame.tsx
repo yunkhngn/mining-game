@@ -18,6 +18,7 @@ export function CoalGame() {
 
   const isDragging = useRef(false);
   const lastPos = useRef<{x: number, y: number} | null>(null);
+  const toolRef = useRef<HTMLDivElement>(null);
   const accumulatedDistance = useRef(0);
   const DISTANCE_THRESHOLD = 500;
 
@@ -25,6 +26,15 @@ export function CoalGame() {
     if (e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
     isDragging.current = true;
     lastPos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleScenePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (toolRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      toolRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -94,8 +104,20 @@ export function CoalGame() {
       </header>
 
       <div className={`workbench workbench--${state.status}`}>
-        <div className="coal-scene" aria-hidden="true">
+        <div 
+          className="coal-scene" 
+          aria-hidden="true"
+          onPointerMove={handleScenePointerMove}
+        >
           <div className="coal-shadow" />
+          
+          <div 
+            ref={toolRef} 
+            className="tool-cursor" 
+            data-tool={state.activeTab} 
+            data-active={state.status !== 'complete'}
+          />
+
           <div 
             className="coal-piece"
             data-testid="coal-piece"

@@ -153,12 +153,75 @@ button {
     inset -10px -15px 40px rgba(0,0,0,0.9),
     inset 10px 10px 20px rgba(255,255,255,0.05);
   transition: all 400ms cubic-bezier(0.2, 0, 0, 1);
-  cursor: grab;
   touch-action: none;
+  cursor: none;
 }
 
 .coal-piece:active {
-  cursor: grabbing;
+  cursor: none;
+}
+
+.tool-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.coal-scene:hover .tool-cursor[data-active="true"] {
+  opacity: 1;
+}
+
+.coal-scene {
+  cursor: none;
+}
+
+/* Chisel Tool */
+.tool-cursor[data-tool="carving"]::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 56px;
+  background: 
+    linear-gradient(to right, rgba(255,255,255,0.3) 0%, transparent 30%, rgba(0,0,0,0.5) 100%),
+    linear-gradient(to bottom, 
+      #8b4513 0%, #5c3a21 30%, 
+      #9ca3af 30%, #4b5563 70%, 
+      #e5e7eb 70%, #9ca3af 100%
+    );
+  clip-path: polygon(25% 0, 75% 0, 75% 30%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%, 25% 30%);
+  transform-origin: bottom center;
+  transform: translate(-10px, -56px) rotate(15deg);
+  filter: drop-shadow(6px 8px 6px rgba(0,0,0,0.7));
+  transition: transform 50ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.coal-scene:active .tool-cursor[data-tool="carving"]::before {
+  transform: translate(-10px, -56px) rotate(-25deg);
+}
+
+/* Polishing Cloth Tool */
+.tool-cursor[data-tool="polishing"]::before {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle at 30% 30%, #fdfbf7, #e3dfd3);
+  border-radius: 40% 60% 50% 40%;
+  box-shadow: 
+    inset -4px -4px 12px rgba(0,0,0,0.1),
+    4px 8px 16px rgba(0,0,0,0.4);
+  transform: translate(-28px, -28px);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  transition: transform 100ms, background 100ms;
+}
+
+.coal-scene:active .tool-cursor[data-tool="polishing"]::before {
+  transform: translate(-28px, -28px) scale(0.85);
+  background: radial-gradient(circle at 40% 40%, #fdfbf7, #d3cfc3);
 }
 
 .coal-piece::after {
@@ -177,16 +240,28 @@ button {
 }
 
 .workbench--complete .coal-piece {
-  clip-path: polygon(35% 10%, 65% 10%, 85% 35%, 85% 65%, 65% 90%, 35% 90%, 15% 65%, 15% 35%);
-  border-radius: 40% 40% 30% 30%;
+  clip-path: none;
+  -webkit-mask-image: url('/lion.svg');
+  -webkit-mask-size: 90%;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url('/lion.svg');
+  mask-size: 90%;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  border-radius: 0;
   background: 
     linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.1) 25%, transparent 35%),
     linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%),
     radial-gradient(circle at 40% 30%, #1c1c1c 0%, #000 90%);
-  box-shadow: 
-    inset -15px -20px 50px rgba(0,0,0,0.9),
-    inset 15px 15px 30px rgba(255,255,255,0.1),
-    0 10px 30px rgba(0,0,0,0.8);
+  filter: 
+    drop-shadow(-1px -1px 1px rgba(255,255,255,0.15)) /* Highlight top-left edge */
+    drop-shadow(1px 1px 0 #151515) /* Extrusion step 1 */
+    drop-shadow(2px 2px 0 #111111) /* Extrusion step 2 */
+    drop-shadow(3px 3px 0 #0a0a0a) /* Extrusion step 3 */
+    drop-shadow(4px 4px 0 #050505) /* Extrusion step 4 */
+    drop-shadow(5px 5px 0 #000000) /* Extrusion step 5 */
+    drop-shadow(15px 25px 25px rgba(0,0,0,0.9)); /* Deep ground shadow */
 }
 
 .workbench--complete .coal-piece::after {
