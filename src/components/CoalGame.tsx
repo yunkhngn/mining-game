@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import {
   carveCoal,
   createInitialCoalGameState,
@@ -16,6 +16,55 @@ const tabLabels: Record<CoalGameTab, string> = {
 export function CoalGame() {
   const [state, setState] = useState(createInitialCoalGameState);
 
+  const isDragging = useRef(false);
+  const lastPos = useRef<{x: number, y: number} | null>(null);
+  const accumulatedDistance = useRef(0);
+  const DISTANCE_THRESHOLD = 500;
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
+    isDragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging.current || !lastPos.current) return;
+
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    accumulatedDistance.current += distance;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+
+    let triggered = false;
+    while (accumulatedDistance.current >= DISTANCE_THRESHOLD) {
+      accumulatedDistance.current -= DISTANCE_THRESHOLD;
+      triggered = true;
+    }
+
+    if (triggered) {
+      setState((currentState) => {
+        if (currentState.activeTab === 'carving' && currentState.status === 'carving') {
+          return carveCoal(currentState);
+        } else if (currentState.activeTab === 'polishing' && currentState.polishingUnlocked && currentState.status !== 'complete') {
+          return polishCoal(currentState);
+        }
+        return currentState;
+      });
+    }
+  };
+
+  const handlePointerUpOrLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging.current) {
+      isDragging.current = false;
+      lastPos.current = null;
+      if (e.currentTarget.hasPointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    }
+  };
+
   const statusText = useMemo(() => {
     if (state.status === 'complete') {
       return 'Sản phẩm đã hoàn thiện với bề mặt bóng gương.';
@@ -30,14 +79,6 @@ export function CoalGame() {
 
   const selectTab = (tab: CoalGameTab) => {
     setState((currentState) => setCoalGameTab(currentState, tab));
-  };
-
-  const handleCarve = () => {
-    setState((currentState) => carveCoal(currentState));
-  };
-
-  const handlePolish = () => {
-    setState((currentState) => polishCoal(currentState));
   };
 
   const handleReset = () => {
@@ -55,7 +96,14 @@ export function CoalGame() {
       <div className={`workbench workbench--${state.status}`}>
         <div className="coal-scene" aria-hidden="true">
           <div className="coal-shadow" />
-          <div className="coal-piece">
+          <div 
+            className="coal-piece"
+            data-testid="coal-piece"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUpOrLeave}
+            onPointerCancel={handlePointerUpOrLeave}
+          >
             <span className="coal-chip coal-chip--one" />
             <span className="coal-chip coal-chip--two" />
             <span className="coal-chip coal-chip--three" />
@@ -100,9 +148,9 @@ export function CoalGame() {
           >
             <Meter label="Tạo hình" value={state.carvingProgress} />
             <Meter label="Áp lực vật liệu" value={state.structuralStress} tone={state.structuralStress >= 35 ? 'warning' : 'default'} />
-            <button className="game-action" type="button" onClick={handleCarve} disabled={state.status !== 'carving'}>
-              Đập
-            </button>
+            <div className="game-action game-action--instruction">
+              {state.status === 'carving' ? 'Nhấn giữ và chà chuột lên khối than' : 'Đã hoàn thành tạo hình'}
+            </div>
           </div>
 
           <div
@@ -113,9 +161,9 @@ export function CoalGame() {
             role="tabpanel"
           >
             <Meter label="Độ bóng" value={state.shineProgress} tone="shine" />
-            <button className="game-action" type="button" onClick={handlePolish} disabled={!state.polishingUnlocked || state.status === 'complete'}>
-              Đánh bóng
-            </button>
+            <div className="game-action game-action--instruction">
+              {state.status !== 'complete' ? 'Nhấn giữ và chà chuột lên khối than' : 'Đã đạt độ bóng gương'}
+            </div>
           </div>
 
           <button className="reset-action" type="button" onClick={handleReset}>
