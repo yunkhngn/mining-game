@@ -9,8 +9,8 @@ describe('CoalGame', () => {
 
     render(<CoalGame />);
 
-    expect(screen.getByRole('tab', { name: 'Đập than' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tab', { name: 'Đánh bóng' })).toBeDisabled();
+    expect(screen.getByRole('tab', { name: 'Carving' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Polishing' })).toBeDisabled();
 
     const coalPiece = screen.getByTestId('coal-piece');
 
@@ -26,18 +26,18 @@ describe('CoalGame', () => {
       drag(510); // 510px to safely exceed 500px
     }
 
-    expect(screen.getByRole('tab', { name: 'Đánh bóng' })).not.toBeDisabled();
-    expect(screen.getByRole('tab', { name: 'Đánh bóng' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Polishing' })).not.toBeDisabled();
+    expect(screen.getByRole('tab', { name: 'Polishing' })).toHaveAttribute('aria-selected', 'true');
 
     for (let index = 0; index < 8; index += 1) {
       drag(510);
     }
 
-    expect(screen.getByText('Sản phẩm đã hoàn thiện với bề mặt bóng gương.')).toBeInTheDocument();
+    expect(screen.getByText('The product is complete with a mirror-polished surface.')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Làm lại' }));
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
 
-    expect(screen.getByRole('tab', { name: 'Đập than' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tab', { name: 'Đánh bóng' })).toBeDisabled();
+    expect(screen.getByRole('tab', { name: 'Carving' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Polishing' })).toBeDisabled();
   });
 });

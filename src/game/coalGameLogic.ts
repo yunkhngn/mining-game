@@ -25,7 +25,7 @@ export function createInitialCoalGameState(): CoalGameState {
     structuralStress: 0,
     shineProgress: 0,
     polishingUnlocked: false,
-    log: ['Chọn than antraxit thô.']
+    log: ['Selected raw anthracite coal.']
   };
 }
 
@@ -45,7 +45,7 @@ export function carveCoal(state: CoalGameState): CoalGameState {
       carvingProgress: CARVING_DONE,
       structuralStress,
       polishingUnlocked: true,
-      log: [...state.log, 'Sản phẩm thô đã thành hình. Chuyển sang đánh bóng.']
+      log: [...state.log, 'Raw piece has taken shape. Switching to polishing.']
     };
   }
 
@@ -53,7 +53,7 @@ export function carveCoal(state: CoalGameState): CoalGameState {
     ...state,
     carvingProgress,
     structuralStress,
-    log: [...state.log, 'Đã loại bỏ một phần than thừa.']
+    log: [...state.log, 'Removed some excess coal.']
   };
 }
 
@@ -70,7 +70,7 @@ export function polishCoal(state: CoalGameState): CoalGameState {
       activeTab: 'polishing',
       status: 'complete',
       shineProgress: MAX_PERCENT,
-      log: [...state.log, 'Bề mặt đã đạt độ bóng gương.']
+      log: [...state.log, 'Surface has reached a mirror finish.']
     };
   }
 
@@ -78,7 +78,7 @@ export function polishCoal(state: CoalGameState): CoalGameState {
     ...state,
     activeTab: 'polishing',
     shineProgress,
-    log: [...state.log, 'Tiếp tục đánh bóng bề mặt.']
+    log: [...state.log, 'Continuing to polish the surface.']
   };
 }
 

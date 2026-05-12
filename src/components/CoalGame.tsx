@@ -9,8 +9,8 @@ import {
 } from '../game/coalGameLogic';
 
 const tabLabels: Record<CoalGameTab, string> = {
-  carving: 'Đập than',
-  polishing: 'Đánh bóng'
+  carving: 'Carving',
+  polishing: 'Polishing'
 };
 
 export function CoalGame() {
@@ -77,14 +77,14 @@ export function CoalGame() {
 
   const statusText = useMemo(() => {
     if (state.status === 'complete') {
-      return 'Sản phẩm đã hoàn thiện với bề mặt bóng gương.';
+      return 'The product is complete with a mirror-polished surface.';
     }
 
     if (state.status === 'readyToPolish') {
-      return 'Phôi than đã thành hình. Tiếp tục đánh bóng để hoàn thiện.';
+      return 'The coal blank has taken shape. Continue polishing to finish.';
     }
 
-    return 'Đập nhiều lần để loại bỏ than thừa và tạo hình sản phẩm.';
+    return 'Carve repeatedly to remove excess coal and shape the product.';
   }, [state.status]);
 
   const selectTab = (tab: CoalGameTab) => {
@@ -99,7 +99,7 @@ export function CoalGame() {
     <section className="coal-game" aria-labelledby="coal-game-title">
       <header className="game-header">
         <p className="eyebrow">Mini game</p>
-        <h1 id="coal-game-title">Đập than và đánh bóng</h1>
+        <h1 id="coal-game-title">Carving & Polishing</h1>
         <p>{statusText}</p>
       </header>
 
@@ -168,10 +168,10 @@ export function CoalGame() {
             id="carving-panel"
             role="tabpanel"
           >
-            <Meter label="Tạo hình" value={state.carvingProgress} />
-            <Meter label="Áp lực vật liệu" value={state.structuralStress} tone={state.structuralStress >= 35 ? 'warning' : 'default'} />
+            <Meter label="Carving" value={state.carvingProgress} />
+            <Meter label="Material Stress" value={state.structuralStress} tone={state.structuralStress >= 35 ? 'warning' : 'default'} />
             <div className="game-action game-action--instruction">
-              {state.status === 'carving' ? 'Nhấn giữ và chà chuột lên khối than' : 'Đã hoàn thành tạo hình'}
+              {state.status === 'carving' ? 'Click and drag over the coal' : 'Carving complete'}
             </div>
           </div>
 
@@ -182,14 +182,14 @@ export function CoalGame() {
             id="polishing-panel"
             role="tabpanel"
           >
-            <Meter label="Độ bóng" value={state.shineProgress} tone="shine" />
+            <Meter label="Shine" value={state.shineProgress} tone="shine" />
             <div className="game-action game-action--instruction">
-              {state.status !== 'complete' ? 'Nhấn giữ và chà chuột lên khối than' : 'Đã đạt độ bóng gương'}
+              {state.status !== 'complete' ? 'Click and drag over the coal' : 'Mirror finish achieved'}
             </div>
           </div>
 
           <button className="reset-action" type="button" onClick={handleReset}>
-            Làm lại
+            Reset
           </button>
 
           <ol className="game-log" aria-label="Game log">
